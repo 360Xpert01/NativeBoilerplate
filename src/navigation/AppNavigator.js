@@ -8,6 +8,7 @@ import NotificationScreen from '../screens/notificationScreen/notification';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import withAuth from '../components/withAuth';
 import withLoading from '../components/withLoading';
+import MapViewScren from '../screens/MapviewScreen/MapViewScren';
 
 const Stack = createNativeStackNavigator();
 // const AuthenticatedNotificationScreen = withAuth(withLoading(NotificationScreen));
@@ -38,6 +39,7 @@ const AppNavigator = () => (
         component={NotificationScreen}
         options={{ title: 'Notifications' }}
       />
+        <Stack.Screen name="MapView" component={MapViewScren} options={{ headerShown: false }} />
     </Stack.Navigator>
   </NavigationContainer>
 );
