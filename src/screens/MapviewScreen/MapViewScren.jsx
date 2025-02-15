@@ -1,8 +1,14 @@
-import React from "react";
-import { View, StyleSheet, ImageBackground, Text } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, ImageBackground, Text, ScrollView } from "react-native";
 import IconButton from "../../components/iconButton";
+import PickContainer from "../../components/pickContainer";
+import colors from '../../Thems/AppColors/AppColors';
+import Size from '../../Thems/FontSize/FontSize';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const MapViewScreen = () => {
+  const [isOnline, setIsOnline] = useState(true);
+
   const handleMenuPress = () => {
     console.log('Menu is here');
   };
@@ -25,23 +31,46 @@ const MapViewScreen = () => {
             source={require('../../assets/icons/menu_icon.jpg')}
             onPress={handleMenuPress}
           />
+
+          {/* Toggle Button */}
+          <View style={styles.toggleContainer}>
+            <Text
+              style={[styles.toggleText, isOnline ? styles.activeText : styles.inactiveText]}
+              onPress={() => setIsOnline(true)}
+            >
+              Online
+            </Text>
+            <Text
+              style={[styles.toggleText, !isOnline ? styles.activeText : styles.inactiveText]}
+              onPress={() => setIsOnline(false)}
+            >
+              Offline
+            </Text>
+          </View>
+
+          {/* Notification Icon */}
           <IconButton
             source={require('../../assets/icons/notifi_icon.jpg')}
             onPress={handleNotificationPress}
           />
         </View>
 
-        {/* Pick Container below the Top Buttons */}
-        <View style={styles.MyContainer}>
-         <Text style={styles.pickheadingText}>MY Passengers</Text>
-         <View style={styles.pickContainer}>
-          <Text>
-            Ali imran (0342059976)
-          </Text>
-          <View style={styles.pickbutton}>
-
-          </View>
-         </View>
+        {/* Pick Container List in ScrollView */}
+        <View style={styles.MainContainer}>
+          <Text style={styles.pickheadingText}>MY Passengers</Text>
+          <ScrollView 
+            showsVerticalScrollIndicator={false} 
+            contentContainerStyle={styles.scrollContent}
+          >
+            <PickContainer name="Ali Imran" phone="0342059976" onPress={() => console.log("Ali is here")} />
+            <PickContainer name="Asad Khokar" phone="0342059976" onPress={() => console.log("Khokar is here")} />
+            <PickContainer name="Shahab Awan" phone="0342059976" onPress={() => console.log("Shahab is here")} />
+            <PickContainer name="Sara Khan" phone="0342059976" onPress={() => console.log("Sara is here")} />
+            <PickContainer name="Hassan Raza" phone="0342059976" onPress={() => console.log("Hassan is here")} />
+            <PickContainer name="Nida Fatima" phone="0342059976" onPress={() => console.log("Nida is here")} />
+            <PickContainer name="Ahsan Ali" phone="0342059976" onPress={() => console.log("Ahsan is here")} />
+            <PickContainer name="Zara Ahmed" phone="0342059976" onPress={() => console.log("Zara is here")} />
+          </ScrollView>
         </View>
       </ImageBackground>
     </View>
@@ -61,63 +90,68 @@ const styles = StyleSheet.create({
   },
   topbuttonsContainer: {
     position: "absolute",
-    top: 21,
-    left: 27,
-    right: 27,
-    paddingVertical: 10,
-    borderRadius: 10,
+    top: hp("2.5%"),
+    left: wp("7.5%"),
+    right: wp("7.5%"),
+    paddingVertical: hp("1.5%"),
+    borderRadius: wp("2%"),
     flexDirection: "row",
-    justifyContent: "space-between", // Ensure space between the images
+    justifyContent: "space-between", 
     alignItems: "center",
-    height: 60,
-    zIndex: 10,
   },
-MyContainer: {
+  toggleContainer: {
+    flexDirection: "row",
+    backgroundColor: colors.Toggle_Backgroun_color,
+    borderRadius: wp("5%"),
+    padding: wp("1%"),
+    width: wp("40%"),
+    height: hp("6%"),
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "relative",
+  },
+  toggleText: {
+    flex: 1,
+    fontSize: Size.onPress,
+    fontFamily: 'Urbanist-Bold',
+    textAlign: "center",
+    paddingVertical: hp("1%"),
+    borderRadius: wp("4%"),
+  },
+  activeText: {
+    backgroundColor: colors.Active_Toggle_BG,
+    color: colors.Active_Text,
+  },
+  inactiveText: {
+    backgroundColor: colors.InActive_Toggle_BG,
+    color: colors.InActive_Text,
+  },
+  MainContainer: {
     position: "absolute",
-    top: 450,
+    top: hp("60%"),
     left: 0,
     right: 0,
-    backgroundColor: "white",
-    height: "50%", // Adjust height based on requirement
-    justifyContent: "flex-start", // Start content from the top
-    alignItems: "flex-start", // Align text to the left
-    padding: 20, // Maintain padding for spacing
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
+    backgroundColor: colors.White,
+    height: "50%",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    padding: wp("5%"),
+    borderTopRightRadius: wp("7%"),
+    borderTopLeftRadius: wp("7%"),
     shadowColor: "#000000",
-    shadowOffset: { width: 0, height: -4 },
+    shadowOffset: { width: 0, height: -hp("0.5%") },
     shadowOpacity: 0.3,
-    shadowRadius: 15,
+    shadowRadius: wp("4%"),
     elevation: 5,
   },
   pickheadingText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    margintop: 10,
-    marginBottom:10
+    fontSize: Size.Four,
+    marginTop: hp("1%"),
+    marginBottom: hp("1.5%"),
+    fontFamily:"Urbanist-Bold"
   },
- pickContainer:{
-  height:45,
-  width:"100%",
-  backgroundColor:"#F1F1F1",
-  padding:10,
-  borderRadius:12,
-  borderColor:'#C6C6C6',
-  borderWidth:1,
-  flexDirection:"row",
-   alignItems: "",
- },
- passengerName: {
-  fontFamily: "Urbanist", 
-  fontSize: 16,
-  fontWeight: "400",  
-  color: "#3C3C3C",  
-},
-pickbutton:{
-  height:35,
-  width:77,
-  backgroundColor:"#3C3C3C"
-}
-  
+  scrollContent: {
+    paddingBottom: hp("3%"), // Ensures some space at the bottom for better scrolling
+  },
 });
-
+ 

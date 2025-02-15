@@ -154,28 +154,39 @@
 //   fontFamily: 'Urbanist-Bold',
 // }
 // });
- import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { TextInput } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../Redux/slices/authSlice';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Import the package
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomInput from '../../components/cusotmInput';
-
 import colors from '../../Thems/AppColors/AppColors';
-import TextSizes from '../../Thems/FontSize/FontSize';
+import Size from '../../Thems/FontSize/FontSize';
 
 const LoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { user, error } = useSelector((state) => state.auth);
+
+  const handleLogin = () => {
+    dispatch(login({ phone, password })); // Send both phone and password
+
+    // If user exists, navigate to MapView
+    if (user) {
+      navigation.navigate('MapView');
+    }
+  };
 
   return (
     <KeyboardAwareScrollView
       style={styles.container}
-      resetScrollToCoords={{ x: 0, y: 0 }} // Resets the scroll to top when keyboard is dismissed
-      scrollEnabled={true} // Enables scrolling
-      keyboardShouldPersistTaps="handled" // Makes sure taps outside of text fields work properly
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      scrollEnabled={true}
+      keyboardShouldPersistTaps="handled"
     >
       <View style={styles.MyColumn}>
         <Text style={styles.logoText}>LOGO</Text>
@@ -183,7 +194,7 @@ const LoginScreen = () => {
           Your One-Stop solution for Effortless tracking System.
         </Text>
 
-         {/* Phone Number Input */}
+        {/* Phone Number Input */}
         <CustomInput
           placeholder="Phone Number"
           value={phone}
@@ -201,11 +212,11 @@ const LoginScreen = () => {
           style={styles.input}
         />
 
+        {/* Error Message */}
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
         {/* Login Button */}
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => navigation.navigate('MapView')}
-        >
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
@@ -229,13 +240,13 @@ const styles = StyleSheet.create({
   },
   logoText: {
     color: "#A3A3A3",
-    fontSize: TextSizes.logo,
+    fontSize: Size.logo,
     fontFamily: 'Urbanist-Bold',
     fontWeight: '700',
   },
   logodescription: {
     color: colors.Logo_Description,
-    fontSize: TextSizes.fontThree,
+    fontSize: Size.Three,
     textAlign: 'left',
     marginTop: hp('2%'),
     fontWeight: '400',
@@ -262,9 +273,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.White,
-    fontSize: TextSizes.fontFour,
+    fontSize: Size.Four,
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'Urbanist-Bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: Size.Three,
+    marginTop: hp('1%'),
   },
 });
