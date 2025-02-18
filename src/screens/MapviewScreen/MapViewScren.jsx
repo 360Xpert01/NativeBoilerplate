@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ImageBackground, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
+import CustomMapView from "../../components/customMapView";
 import IconButton from "../../components/iconButton";
 import PickContainer from "../../components/pickContainer";
 import colors from '../../Thems/AppColors/AppColors';
@@ -9,84 +10,93 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 const MapViewScreen = () => {
   const [isOnline, setIsOnline] = useState(true);
 
-  const handleMenuPress = () => {
-    console.log('Menu is here');
+  const handleMenuPress = () => console.log('Menu is here');
+  const handleNotificationPress = () => console.log('Notification is here');
+
+  ////////////////////////////////////////////////////////////////// Coordinates for Karachi, Pakistan
+  const karachiCoordinates = {
+    latitude: 24.8607,
+    longitude: 67.0011,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
   };
 
-  const handleNotificationPress = () => {
-    console.log('Notification is here');
+  //////////////////////////////////////////////////////////////////// Define boundaries for Karachi
+  const karachiBoundaries = {
+    minLatitude: 24.75,
+    maxLatitude: 24.95,
+    minLongitude: 66.85,
+    maxLongitude: 67.15,
+  };
+
+  // Sample multiple passenger coordinates (For now, static)
+  const passengerLocations = [
+    { latitude: 24.865, longitude: 67.002 }, // Passenger 1
+    { latitude: 24.870, longitude: 67.010 }, // Passenger 2
+    { latitude: 24.850, longitude: 67.015 }, // Passenger 3
+     { latitude: 24.870, longitude: 67.020 }, // Passenger 3
+      { latitude: 24.850, longitude: 67.025 }, // Passenger 3
+       { latitude: 24.8980, longitude: 67.035 }, // Passenger 3
+  ];
+
+  ////////////////////////////////////////////////////////////////////handle region change complete
+  const handleRegionChangeComplete = (region) => {
+    if (
+      region.latitude < karachiBoundaries.minLatitude || region.latitude > karachiBoundaries.maxLatitude ||
+      region.longitude < karachiBoundaries.minLongitude || region.longitude > karachiBoundaries.maxLongitude
+    ) {
+      console.log("Out of Karachi boundaries, resetting position");
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Map Image as Background */}
-      <ImageBackground
-        source={require("../../assets/images/mapView.jpg")}
-        style={styles.mapImage}
-      >
-        {/* Buttons Container on Top of Map */}
-        <View style={styles.topbuttonsContainer}>
-          {/* Menu Icon */}
-          <IconButton
-            source={require('../../assets/icons/menu_icon.jpg')}
-            onPress={handleMenuPress}
-          />
+      {/* Reusable Map Component */}
+      <CustomMapView 
+        initialRegion={karachiCoordinates} 
+        onRegionChangeComplete={handleRegionChangeComplete} 
+        markerTitle="Karachi, Pakistan"
+        markerDescription="This is Karachi!"
+        driverLocation={karachiCoordinates} // Pass driver location to map
+        passengerLocations={passengerLocations} // Pass passenger locations to map
+      />
 
-          {/* Toggle Button */}
-          <View style={styles.toggleContainer}>
-            <Text
-              style={[styles.toggleText, isOnline ? styles.activeText : styles.inactiveText]}
-              onPress={() => setIsOnline(true)}
-            >
-              Online
-            </Text>
-            <Text
-              style={[styles.toggleText, !isOnline ? styles.activeText : styles.inactiveText]}
-              onPress={() => setIsOnline(false)}
-            >
-              Offline
-            </Text>
-          </View>
-
-          {/* Notification Icon */}
-          <IconButton
-            source={require('../../assets/icons/notifi_icon.jpg')}
-            onPress={handleNotificationPress}
-          />
+      {/* Buttons on Top */}
+      <View style={styles.topbuttonsContainer}>
+        <IconButton source={require('../../assets/icons/menu_icon.jpg')} onPress={handleMenuPress} />
+        
+        <View style={styles.toggleContainer}>
+          <Text style={[styles.toggleText, isOnline ? styles.activeText : styles.inactiveText]} onPress={() => setIsOnline(true)}>Online</Text>
+          <Text style={[styles.toggleText, !isOnline ? styles.activeText : styles.inactiveText]} onPress={() => setIsOnline(false)}>Offline</Text>
         </View>
 
-        {/* Pick Container List in ScrollView */}
-        <View style={styles.MainContainer}>
-          <Text style={styles.pickheadingText}>MY Passengers</Text>
-          <ScrollView 
-            showsVerticalScrollIndicator={false} 
-            contentContainerStyle={styles.scrollContent}
-          >
-            <PickContainer name="Ali Imran" phone="0342059976" onPress={() => console.log("Ali is here")} />
-            <PickContainer name="Asad Khokar" phone="0342059976" onPress={() => console.log("Khokar is here")} />
-            <PickContainer name="Shahab Awan" phone="0342059976" onPress={() => console.log("Shahab is here")} />
-            <PickContainer name="Sara Khan" phone="0342059976" onPress={() => console.log("Sara is here")} />
-            <PickContainer name="Hassan Raza" phone="0342059976" onPress={() => console.log("Hassan is here")} />
-            <PickContainer name="Nida Fatima" phone="0342059976" onPress={() => console.log("Nida is here")} />
-            <PickContainer name="Ahsan Ali" phone="0342059976" onPress={() => console.log("Ahsan is here")} />
-            <PickContainer name="Zara Ahmed" phone="0342059976" onPress={() => console.log("Zara is here")} />
-          </ScrollView>
-        </View>
-      </ImageBackground>
+        <IconButton source={require('../../assets/icons/notifi_icon.jpg')} onPress={handleNotificationPress} />
+      </View>
+
+      {/* Passenger List */}
+      <View style={styles.MainContainer}>
+        <Text style={styles.pickheadingText}>MY Passengers</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          {passengerLocations.map((passenger, index) => (
+            <PickContainer 
+              key={index} 
+              name={`Passenger ${index + 1}`} 
+              phone={`03420599${index + 1}`} 
+              onPress={() => console.log(`Passenger ${index + 1} is here`)} 
+            />
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
 
 export default MapViewScreen;
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  mapImage: {
-    flex: 1, 
-    resizeMode: "cover",
-    justifyContent: "flex-start",
   },
   topbuttonsContainer: {
     position: "absolute",
@@ -96,7 +106,7 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1.5%"),
     borderRadius: wp("2%"),
     flexDirection: "row",
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     alignItems: "center",
   },
   toggleContainer: {
@@ -148,10 +158,10 @@ const styles = StyleSheet.create({
     fontSize: Size.Four,
     marginTop: hp("1%"),
     marginBottom: hp("1.5%"),
-    fontFamily:"Urbanist-Bold"
+    fontFamily: "Urbanist-Bold",
   },
   scrollContent: {
-    paddingBottom: hp("3%"), // Ensures some space at the bottom for better scrolling
+    paddingBottom: hp("3%"),
   },
 });
- 
+
